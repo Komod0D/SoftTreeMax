@@ -15,6 +15,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 # Internals
 from environments.cule_env import CuleEnv
 from environments.cule_env_multiple import CuleEnvMultiple
+from environments.failure import Failure
 from policies.actor_critic_ts import ActorCriticCnnTSPolicy
 from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
 from callbacks import WandbTrainingCallback
@@ -39,7 +40,10 @@ def main():
     fire_reset = config.env_name not in ["AsterixNoFrameskip-v4", "CrazyClimberNoFrameskip-v4",
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4"]
-    if config.tree_depth == 0 and config.run_type == "train":
+    
+    if fire_reset:
+        env = Failure()
+    elif config.tree_depth == 0 and config.run_type == "train":
         env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
                               clip_reward=config.clip_reward, fire_reset=fire_reset,
                               n_envs=config.n_envs)
