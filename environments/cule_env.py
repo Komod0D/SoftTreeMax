@@ -11,7 +11,7 @@ import numpy as np
 from gym import spaces
 
 # Internal
-from failure import Failure
+from environments.failure import Failure
 
 
 class CuleEnv(gym.Env):
