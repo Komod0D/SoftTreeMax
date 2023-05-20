@@ -3,10 +3,10 @@ from typing import Tuple
 
 # Externals
 import torch as th
-from stable_baselines3.common.policies import MlpPolicy
+from stable_baselines3.common.policies import ActorCriticPolicy
 
 
-class ActorCriticPolicyDepth0(MlpPolicy):
+class ActorCriticPolicyDepth0(ActorCriticPolicy):
     def __init__(self, observation_space, action_space, lr_schedule, **kwargs):
         super(ActorCriticPolicyDepth0, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
         self.gradients_history = {}
