@@ -15,12 +15,8 @@ from utils import add_regularization_logits
 class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
     def __init__(self, observation_space, action_space, lr_schedule, tree_depth, gamma, step_env, buffer_size,
                  learn_alpha, learn_beta, max_width, use_leaves_v, is_cumulative_mode, regularization, **kwargs):
-        super(ActorCriticTSPolicy, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
-        self.is_cnn = kwargs["failure"]
-        if self.is_cnn:
-            self.cule_bfs = CuleBFS(step_env, tree_depth, gamma, self.compute_value, max_width)
-        else:
-            self.cule_bfs = FailureBFS(step_env, tree_depth, gamma, self.compute_value, max_width)
+        super(ActorCriticTSPolicy, self).__init__(observation_space, action_space, lr_schedule, **kwargs)        
+        self.cule_bfs = FailureBFS(step_env, tree_depth, gamma, self.compute_value, max_width)
         self.time_step = 0
         self.obs2leaves_dict = {}
         self.timestep2obs_dict = {}
