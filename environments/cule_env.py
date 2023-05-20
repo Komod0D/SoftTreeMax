@@ -41,8 +41,13 @@ class CuleEnv(gym.Env):
         self.reward_range = (-math.inf, math.inf)
         self.metadata = {"render.modes": ["human", "rgb_array"]}
         orig_shape = self.env.observation_space.shape
-        self.observation_space = gym.spaces.Box(0, 255, (orig_shape[0] * n_frame_stack, orig_shape[1], orig_shape[2]),
+        
+        if env_kwargs["env_name"] != "Failure":
+            self.observation_space = gym.spaces.Box(0, 255, (orig_shape[0] * n_frame_stack, orig_shape[1], orig_shape[2]),
                                                 np.uint8)
+        else:
+            self.observation_space = gym.spaces.Discrete(len(actions))
+            
         self.action_space = spaces.Discrete(len(actions))
 
     def _reset_buffer(self):
