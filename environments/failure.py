@@ -10,6 +10,7 @@ class Failure(gym.Env):
 
     def __init__(self, n_states: int = 3, time_horizon: int = 10, env_kwargs=None):
         super().__init__()
+        self.env_kwargs = env_kwargs
         self.observation_space = spaces.Discrete(n_states)
         self.action_space = self.observation_space
         self.current_state = self.observation_space.sample()
