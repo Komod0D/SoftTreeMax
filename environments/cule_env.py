@@ -10,15 +10,23 @@ import gym
 import numpy as np
 from gym import spaces
 
+# Internal
+from failure import Failure
+
 
 class CuleEnv(gym.Env):
     def __init__(self, device, env_kwargs, n_frame_stack=4, noop_max=30, clip_reward=True, fire_reset=True):
         self.device = device
         self.env_kwargs = env_kwargs
-        cart = AtariRom(env_kwargs["env_name"])
-        actions = cart.minimal_actions()
-        self.env = AtariEnv(num_envs=1, device=torch.device("cpu"), **env_kwargs)
-        super(AtariEnv, self.env).reset(0)
+        if env_kwargs["env_name"] != "Failure":
+            cart = AtariRom(env_kwargs["env_name"])
+            actions = cart.minimal_actions()
+            self.env = AtariEnv(num_envs=1, device=torch.device("cpu"), **env_kwargs)
+            super(AtariEnv, self.env).reset(0)
+        else:
+            self.env = Failure()
+            super(Failure, self.env).reset()
+            
         self.env.reset(initial_steps=1, verbose=1)
         self.lives = 0  # Life counter (used in DeepMind training)
         self.life_termination = False  # Used to check if resetting only from loss of life
