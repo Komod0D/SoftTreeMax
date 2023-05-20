@@ -31,7 +31,7 @@ class Failure(gym.Env):
         self.current_state = action
         return observation, reward, terminated, truncated, info
 
-    def reset(self, seed=None, options=None):
+    def reset(self, seed=None, options=None, initial_steps=None):
         self.current_state = self.observation_space.sample()
         observation = self.current_state
         
