@@ -41,7 +41,9 @@ def main():
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4", "Failure"]
     
-    if config.tree_depth == 0 and config.run_type == "train":
+    if config.env_name == "Failure":
+        env = Failure(env_kwargs=env_kwargs)
+    elif config.tree_depth == 0 and config.run_type == "train":
         env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
                               clip_reward=config.clip_reward, fire_reset=fire_reset,
                               n_envs=config.n_envs)

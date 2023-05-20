@@ -8,7 +8,7 @@ class Failure(gym.Env):
 
     metadata = {"render_modes": ["human"], "render_fps": 30}
 
-    def __init__(self, n_states: int = 3, time_horizon: int = 10):
+    def __init__(self, n_states: int = 3, time_horizon: int = 10, env_kwargs=None):
         super().__init__()
         self.observation_space = spaces.Discrete(n_states)
         self.action_space = self.observation_space
