@@ -7,15 +7,15 @@ import torch as th
 from stable_baselines3.common.utils import get_device
 
 # Internals
-from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
+from policies.actor_critic_depth0 import ActorCriticPolicyDepth0
 from policies.cule_bfs import CuleBFS
 from utils import add_regularization_logits
 
 
-class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
+class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
     def __init__(self, observation_space, action_space, lr_schedule, tree_depth, gamma, step_env, buffer_size,
                  learn_alpha, learn_beta, max_width, use_leaves_v, is_cumulative_mode, regularization, **kwargs):
-        super(ActorCriticCnnTSPolicy, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
+        super(ActorCriticTSPolicy, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
         self.cule_bfs = CuleBFS(step_env, tree_depth, gamma, self.compute_value, max_width)
         self.time_step = 0
         self.obs2leaves_dict = {}

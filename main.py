@@ -16,8 +16,8 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from environments.cule_env import CuleEnv
 from environments.cule_env_multiple import CuleEnvMultiple
 from environments.failure import Failure
-from policies.actor_critic_ts import ActorCriticCnnTSPolicy
-from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
+from policies.actor_critic_ts import ActorCriticTSPolicy
+from policies.actor_critic_depth0 import ActorCriticPolicyDepth0
 from callbacks import WandbTrainingCallback
 from utils import create_parser, set_seed
 
@@ -60,7 +60,7 @@ def main():
 
     # Setting PPO models
     if config.tree_depth == 0 and config.run_type == "train":
-        model = PPO(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, **PPO_params)
+        model = PPO(policy=ActorCriticPolicyDepth0, env=env, verbose=2, **PPO_params)
     else:        # Hash buffer saves previous states and their trees for reuse in evaluate_actions
         hash_buffer_size = max(config.hash_buffer_size, PPO_params["n_steps"])
         # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
@@ -69,7 +69,7 @@ def main():
                          "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v,
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
-        model = PPO(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **PPO_params)
+        model = PPO(policy=ActorCriticTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **PPO_params)
 
     # save agent folder and name
     saved_agents_dir = "saved_agents"
@@ -86,9 +86,9 @@ def main():
         if config.model_filename is None:
             raise ValueError("Model filename missing. Please specify using model_filename argument.")
         if config.tree_depth == 0:
-            model.policy = ActorCriticCnnPolicyDepth0.load(config.model_filename)
+            model.policy = ActorCriticPolicyDepth0.load(config.model_filename)
         else:
-            model.policy = ActorCriticCnnTSPolicy.load(config.model_filename, lr_schedule=ppo_def_lr, env=env)
+            model.policy = ActorCriticTSPolicy.load(config.model_filename, lr_schedule=ppo_def_lr, env=env)
         avg_score, avg_length = evaluate_policy(model, env, n_eval_episodes=config.n_eval_episodes,
                                                 return_episode_rewards=True, deterministic=False)
         print("Scores of all episodes: ", avg_score)
