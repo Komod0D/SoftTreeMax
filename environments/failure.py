@@ -30,7 +30,7 @@ class Failure(gym.Env):
         info = {"state": self.current_state, "action": action, "orig_reward": reward}
 
         if terminated:
-            observation, info = self.reset()
+            observation = self.reset()
 
         self.current_state = action
         return observation, reward, terminated, info
