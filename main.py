@@ -77,6 +77,9 @@ def main():
     if config.run_type == "train":
         if not os.path.isdir(saved_agents_dir):
             os.makedirs(saved_agents_dir)
+        else:
+            if os.path.isfile(os.path.join(saved_agents_dir, config.model_filename)):
+                model.policy = ActorCriticTSPolicy.load(os.path.join(saved_agents_dir, config.model_filename, lr_schedule=ppo_def_lr, env=env))
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
         callbacks = [WandbTrainingCallback()]
