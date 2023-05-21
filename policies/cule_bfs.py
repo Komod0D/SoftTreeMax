@@ -234,7 +234,7 @@ class FailureBFS():
 
     def bfs(self, state, tree_depth, time_step=-1):
 
-        first_action = [a for a in range(len(self.env.action_space))]
+        first_action = [a for a in range(self.env.action_space.n)]
         
         if time_step == -1:
             time_step = self.env.time_step
