@@ -65,7 +65,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         else:
             latent_pi, value_root = self.compute_value_with_root(leaves_obs=leaves_observations, root_obs=obs)    
         
-        mean_actions_logits = th.ones((self.action_space.n, )) / self.action_space.n
+        mean_actions_logits = th.ones((self.action_space.n, ), device=obs.device) / self.action_space.n
         mean_actions_logits[0] += 1
 
         mean_actions_logits += value_root[:, 0] * 0
