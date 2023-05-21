@@ -234,7 +234,7 @@ class FailureBFS():
 
     def bfs(self, state, tree_depth, time_step=-1):
 
-        first_action = [a for a in range(self.env.action_space.n)]
+        first_action = [a for a in range(self.env.action_space)]
         
         if time_step == -1:
             time_step = self.env.time_step
@@ -254,7 +254,7 @@ class FailureBFS():
             terminations.append(terminated)
         
         if tree_depth == 0:
-            return th.Tensor(states).to(0), th.Tensor(rewards).to(0), first_action
+            return th.Tensor(states), th.Tensor(rewards), first_action
         
         new_states = []
         new_rewards = []
@@ -264,11 +264,11 @@ class FailureBFS():
                 new_states.append(temp_states)
                 new_rewards.append(r + self.gamma * temp_rewards)
             else:
-                new_states.append(th.Tensor([s]).to(0))
+                new_states.append(th.Tensor([s]))
                 new_rewards.append(reward)
 
         states = th.cat(new_states)
         rewards = th.cat(new_rewards)
         
         first_action = th.Tensor(first_action)
-        return states, rewards, first_action
+        return states.to(0), rewards.to(0), first_action.to(0)
