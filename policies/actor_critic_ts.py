@@ -47,6 +47,23 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         :param deterministic: Whether to sample or use deterministic actions
         :return: action, value and log probability of the action
         """
+
+        hash_obs = self.hash_obs(obs)[0].item()
+        if hash_obs in self.obs2leaves_dict:
+            leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
+            del self.timestep2obs_dict[self.obs2timestep_dict[hash_obs]]
+        else:
+            leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
+            self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+        self.obs2timestep_dict[hash_obs] = self.time_step
+        self.timestep2obs_dict[self.time_step] = hash_obs
+        # Preprocess the observation if needed
+        val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
+        if self.use_leaves_v:
+            latent_pi, value_root = self.compute_value(leaves_obs=leaves_observations, root_obs=obs)
+            value_root = (val_coef * value_root + rewards.reshape([-1, 1])).max()
+        else:
+            latent_pi, value_root = self.compute_value_with_root(leaves_obs=leaves_observations, root_obs=obs)    
         
         mean_actions_logits = th.ones((self.action_space.n, )) / self.action_space.n
         mean_actions_logits[0] += 1
@@ -55,7 +72,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         log_prob = distribution.log_prob(actions)
         
         self.time_step += 1
-        return actions.reshape(-1, 1), th.tensor([0], device=obs.device).reshape(-1, 1), log_prob
+        return actions.reshape(-1, 1), value_root * 0, log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
         """
@@ -69,13 +86,46 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         """
         self.add_gradients_history()
         batch_size = obs.shape[0]
+
+        mean_actions_logits = th.zeros((batch_size, self.action_space.n), device=actions.device)
+        ret_values = th.zeros((batch_size, 1), device=actions.device)
+        # Preprocess the observation if needed
+        hash_obses = self.hash_obs(obs)
+        all_leaves_obs = [] if self.use_leaves_v else [obs]
+        all_rewards = []
+        all_first_actions = []
+        for i in range(batch_size):
+            hash_obs = hash_obses[i].item()
+            if hash_obs in self.obs2leaves_dict:
+                leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
+            else:
+                print("This should not happen! observation not in our dictionary")
+                leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
+                self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+            all_leaves_obs.append(leaves_observations)
+            all_rewards.append(rewards)
+            all_first_actions.append(first_action)
+            # Preprocess the observation if needed
+        all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
+        val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
+        cat_features = self.extract_features(th.cat(all_leaves_obs))
+        shared_features = self.mlp_extractor.shared_net(cat_features)
+        if self.use_leaves_v:
+            latent_pi = self.mlp_extractor.policy_net(shared_features)
+            latent_vf_root = self.mlp_extractor.value_net(shared_features)
+        else:
+            latent_pi = self.mlp_extractor.policy_net(shared_features[batch_size:])
+            latent_vf_root = self.mlp_extractor.value_net(shared_features[:batch_size])
+        values = self.value_net(latent_vf_root)
+        
+        
         
         mean_actions_logits = th.ones((batch_size, self.action_space.n), device=actions.device) / self.action_space.n
         mean_actions_logits[:, 0] += 1
 
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
-        return th.tensor([0], device=obs.device).reshape(-1, 1), log_prob, distribution.entropy()
+        return values * 0, log_prob, distribution.entropy()
 
     def hash_obs(self, obs):
         return obs
