@@ -25,9 +25,9 @@ class Failure(gym.Env):
         observation = action
         reward = 1 if action == 0 and self.current_state == 0 else 0
         self.time_step += 1
-        terminated = self.time_step == self.time_horizon
+        terminated = self.time_step >= self.time_horizon
 
-        info = {"state": self.current_state, "action": action, "orig_reward": reward}
+        info = {"state": self.current_state, "action": action, "orig_reward": reward, "dones": True, "done": terminated, "reset": terminated}
 
         if terminated:
             observation = self.reset()
@@ -38,6 +38,7 @@ class Failure(gym.Env):
     def reset(self, seed=None, options=None, initial_steps=None, verbose=None):
         self.current_state = self.observation_space.sample()
         observation = self.current_state
+        self.time_step = 0
         
         info = {"reset": True}
         return observation
