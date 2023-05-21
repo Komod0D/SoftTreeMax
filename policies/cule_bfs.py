@@ -231,6 +231,7 @@ class FailureBFS():
         self.gamma = gamma
         self.max_depth = tree_depth
         self.max_width = max_width
+        self.compute_val_func = compute_val_func
 
 
     def bfs(self, state, tree_depth, time_step=-1):
