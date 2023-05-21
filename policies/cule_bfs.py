@@ -273,4 +273,4 @@ class FailureBFS():
         rewards = th.cat(new_rewards)
         
         first_action = th.Tensor(first_action)
-        return states.to(0), rewards.to(0), first_action.to(0)
+        return states.to(0).reshape(-1, 1), rewards.to(0), first_action.to(0)
