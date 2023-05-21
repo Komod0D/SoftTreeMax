@@ -81,9 +81,12 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         return obs
 
     def compute_value_with_root(self, leaves_obs, root_obs=None):
+        leaves_obs = th.zeros_like(leaves_obs)
         if root_obs is None:
             shared_features = self.mlp_extractor.shared_net(self.extract_features(leaves_obs))
             return self.action_net(self.mlp_extractor.policy_net(shared_features)), None
+        
+        root_obs = th.zeros_like(root_obs)
         cat_features = self.extract_features(th.cat((root_obs.reshape(-1, 1), leaves_obs)))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         latent_pi = self.mlp_extractor.policy_net(shared_features[1:])
@@ -92,9 +95,12 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         return latent_pi, value_root
 
     def compute_value(self, leaves_obs, root_obs=None):
+        leaves_obs = th.zeros_like(leaves_obs)
         if root_obs is None:
             shared_features = self.mlp_extractor.shared_net(self.extract_features(leaves_obs))
             return self.action_net(self.mlp_extractor.policy_net(shared_features)), None
+        
+        root_obs = th.zeros_like(root_obs)
         shared_features = self.mlp_extractor.shared_net(self.extract_features(leaves_obs))
         latent_pi = self.mlp_extractor.policy_net(shared_features)
         latent_vf_root = self.mlp_extractor.value_net(shared_features)
