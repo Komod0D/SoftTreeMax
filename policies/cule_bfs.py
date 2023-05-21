@@ -229,7 +229,7 @@ class FailureBFS():
         self.time_horizon = self.env.time_horizon
         self.time_step = self.env.time_step
         self.gamma = gamma
-        self.depth = tree_depth
+        self.max_depth = tree_depth
 
 
     def bfs(self, state, tree_depth, time_step=-1):
