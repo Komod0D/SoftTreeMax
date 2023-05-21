@@ -84,15 +84,14 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
             mean_actions_logits = th.logsumexp(mean_actions_per_subtree, dim=1, keepdim=True).transpose(1, 0) - \
                                   th.log(counts)
         mean_actions_logits[counts == 0] = -math.inf
-        depth0_logits = self.compute_value(leaves_obs=obs)[0] if self.learn_alpha else th.tensor(0)
+        depth0_logits = self.compute_value(leaves_obs=obs)[0]
         if th.any(th.isnan(mean_actions_logits)):
             print("NaN in forward:mean_actions_logits.")
             mean_actions_logits[th.isnan(mean_actions_logits)] = 0
         if th.any(th.isnan(depth0_logits)):
             print("NaN in forward:depth0_logits.")
             depth0_logits[th.isnan(depth0_logits)] = 0
-        mean_actions_logits = self.alpha * mean_actions_logits + (1 - self.alpha) * depth0_logits
-        mean_actions_logits = add_regularization_logits(mean_actions_logits, self.regularization)
+        mean_actions_logits = depth0_logits
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
@@ -177,15 +176,14 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
                                   th.log(counts)
             mean_actions_logits[i, counts[0, :] == 0] = -math.inf
 
-        depth0_logits = self.compute_value(leaves_obs=obs)[0] if self.learn_alpha else th.tensor(0)
+        depth0_logits = self.compute_value(leaves_obs=obs)[0]
         if th.any(th.isnan(mean_actions_logits)):
             print("NaN in eval_actions:mean_actions_logits!!!")
             mean_actions_logits[th.isnan(mean_actions_logits)] = 0
         if th.any(th.isnan(depth0_logits)):
             print("NaN in eval_actions:depth0_logits!!!")
             depth0_logits[th.isnan(depth0_logits)] = 0
-        mean_actions_logits = self.alpha * mean_actions_logits + (1 - self.alpha) * depth0_logits
-        mean_actions_logits = add_regularization_logits(mean_actions_logits, self.regularization)
+        mean_actions_logits = depth0_logits
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
         if self.use_leaves_v:
