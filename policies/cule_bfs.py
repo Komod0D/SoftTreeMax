@@ -250,7 +250,7 @@ class FailureBFS():
             env = Failure(self.env_kwargs["n_states"], self.env_kwargs["time_horizon"], self.env_kwargs["env_kwargs"])
             env.current_state = state
             env.time_step = time_step
-            state, reward, terminated, truncated, info = env.step(a)
+            state, reward, terminated, _ = env.step(a)
             states.append(state)
             rewards.append(reward)
             terminations.append(terminated)
