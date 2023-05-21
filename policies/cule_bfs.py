@@ -254,7 +254,7 @@ class FailureBFS():
             terminations.append(terminated)
         
         if tree_depth == 0:
-            return th.Tensor(states), th.Tensor(rewards), first_action
+            return th.Tensor(states).to(0), th.Tensor(rewards).to(0), first_action
         
         new_states = []
         new_rewards = []
@@ -264,7 +264,7 @@ class FailureBFS():
                 new_states.append(temp_states)
                 new_rewards.append(r + self.gamma * temp_rewards)
             else:
-                new_states.append(th.Tensor([s]))
+                new_states.append(th.Tensor([s]).to(0))
                 new_rewards.append(reward)
 
         states = th.cat(new_states)
