@@ -71,6 +71,8 @@ def main():
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
         model = PPO(policy=ActorCriticTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **PPO_params)
 
+    model = PPO('MlpPolicy', env=env, verbose=1, **PPO_params)
+
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
