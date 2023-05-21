@@ -48,7 +48,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         :return: action, value and log probability of the action
         """
         
-        mean_actions_logits = th.ones((self.action_space.n, ), device=get_device()) / self.action_space.n
+        mean_actions_logits = th.ones((self.action_space.n, )) / self.action_space.n
         mean_actions_logits[0] += 1
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
@@ -70,7 +70,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         self.add_gradients_history()
         batch_size = obs.shape[0]
         
-        mean_actions_logits = th.ones((batch_size, self.action_space.n), device=get_device()) / self.action_space.n
+        mean_actions_logits = th.ones((batch_size, self.action_space.n)) / self.action_space.n
         mean_actions_logits[:, 0] += 1
 
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
