@@ -72,7 +72,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         log_prob = distribution.log_prob(actions)
         
         self.time_step += 1
-        return actions.reshape(-1, 1), value_root * 0, log_prob
+        return actions.reshape(-1, 1), value_root, log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
         """
@@ -125,7 +125,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
 
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
-        return values * 0, log_prob, distribution.entropy()
+        return values, log_prob, distribution.entropy()
 
     def hash_obs(self, obs):
         return obs
