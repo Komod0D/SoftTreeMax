@@ -27,7 +27,7 @@ class Failure(gym.Env):
         self.time_step += 1
         terminated = self.time_step == self.time_horizon
 
-        info = {"state": self.current_state, "action": action, "reward": reward}
+        info = {"state": self.current_state, "action": action, "orig_reward": reward}
 
         if terminated:
             observation, info = self.reset()
