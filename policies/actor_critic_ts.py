@@ -48,14 +48,14 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         :return: action, value and log probability of the action
         """
         
-        mean_actions_logits = th.ones((self.action_space.n, )) / self.action_space.n
+        mean_actions_logits = th.ones((self.action_space.n, ), device=get_device()) / self.action_space.n
         mean_actions_logits[0] += 1
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
         
         self.time_step += 1
-        return actions.reshape(-1, 1), th.Tensor([0]).reshape(-1, 1), log_prob
+        return actions.reshape(-1, 1), th.Tensor([0], device=get_device()).reshape(-1, 1), log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
         """
@@ -70,12 +70,12 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         self.add_gradients_history()
         batch_size = obs.shape[0]
         
-        mean_actions_logits = th.ones((batch_size, self.action_space.n)) / self.action_space.n
+        mean_actions_logits = th.ones((batch_size, self.action_space.n), device=get_device()) / self.action_space.n
         mean_actions_logits[:, 0] += 1
 
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
-        return th.Tensor([0]).reshape(-1, 1), log_prob, distribution.entropy()
+        return th.Tensor([0], device=get_device()).reshape(-1, 1), log_prob, distribution.entropy()
 
     def hash_obs(self, obs):
         return obs
