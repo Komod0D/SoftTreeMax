@@ -219,12 +219,10 @@ class FailureBFS():
         if type(step_env) == DummyVecEnv:
             self.multiple_envs = True
             self.env_kwargs = step_env.envs[0].env_kwargs
-            self.n_frame_stack = step_env.envs[0].n_frame_stack
             self.env: Failure = step_env.envs[0]
         else:
             self.multiple_envs = False
             self.env_kwargs = step_env.env_kwargs
-            self.n_frame_stack = step_env.n_frame_stack
             self.env: Failure = step_env
 
 
