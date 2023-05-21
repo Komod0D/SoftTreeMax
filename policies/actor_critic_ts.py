@@ -68,7 +68,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         mean_actions_logits = th.ones((self.action_space.n, )) / self.action_space.n
         mean_actions_logits[0] += 1
 
-        mean_actions_logits += value_root.reshape(-1, 1) * 0
+        mean_actions_logits += value_root[:, 0] * 0
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
@@ -124,7 +124,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         
         mean_actions_logits = th.ones((batch_size, self.action_space.n), device=actions.device) / self.action_space.n
         mean_actions_logits[:, 0] += 1
-        mean_actions_logits += values.reshape(-1, 1) * 0
+        mean_actions_logits += values[:, 0] * 0
 
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
