@@ -55,7 +55,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         log_prob = distribution.log_prob(actions)
         
         self.time_step += 1
-        return actions, 0, log_prob
+        return actions.reshape(-1, 1), 0, log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
         """
