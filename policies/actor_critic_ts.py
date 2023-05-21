@@ -22,7 +22,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         self.timestep2obs_dict = {}
         self.obs2timestep_dict = {}
         self.buffer_size = buffer_size
-        self.learn_alpha = learn_alpha
+        self.learn_alpha = False
         self.learn_beta = learn_beta
         self.tree_depth = tree_depth
         self.max_width = max_width
