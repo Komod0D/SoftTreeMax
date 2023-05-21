@@ -41,7 +41,7 @@ class Failure(gym.Env):
         observation = self.current_state
         
         info = {"reset": True}
-        return observation, info
+        return observation
 
     def render(self):
         pass
