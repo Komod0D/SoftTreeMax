@@ -45,16 +45,12 @@ class WandbTrainingCallback(BaseCallback):
             wandb.log({"train\episodic_reward": self.total_rewards}, step=cur_step)
             wandb.log({"train\episodic_length": self.episode_length}, step=cur_step)
             wandb.log({"num_steps": self.model.num_timesteps}, step=cur_step)
-            
-            """ 
             grad_var = 0
             for param_name in self.locals["self"].policy.gradients_history:
                 param_value = self.locals["self"].policy.gradients_history[param_name]
                 grad_var += torch.mean(torch.var(torch.stack(param_value), dim=0)).item()
                 self.locals["self"].policy.gradients_history[param_name] = param_value[-100:]
             wandb.log({"train\\policy_weights_grad_var": grad_var}, step=cur_step)
-            """
-
             for key, val in self.locals["self"].logger.name_to_value.items():
                 wandb.log({key: val}, step=cur_step)
             self.total_rewards = 0

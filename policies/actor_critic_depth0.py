@@ -3,12 +3,12 @@ from typing import Tuple
 
 # Externals
 import torch as th
-from stable_baselines3.common.policies import ActorCriticPolicy
+from stable_baselines3.common.policies import ActorCriticCnnPolicy
 
 
-class ActorCriticPolicyDepth0(ActorCriticPolicy):
+class ActorCriticCnnPolicyDepth0(ActorCriticCnnPolicy):
     def __init__(self, observation_space, action_space, lr_schedule, **kwargs):
-        super(ActorCriticPolicyDepth0, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
+        super(ActorCriticCnnPolicyDepth0, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
         self.gradients_history = {}
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
@@ -22,7 +22,7 @@ class ActorCriticPolicyDepth0(ActorCriticPolicy):
             and entropy of the action distribution.
         """
         self.add_gradients_history()
-        return super(ActorCriticPolicyDepth0, self).evaluate_actions(obs, actions)
+        return super(ActorCriticCnnPolicyDepth0, self).evaluate_actions(obs, actions)
 
     def add_gradients_history(self):
         policy_params = {param_name: param for param_name, param in self.named_parameters() if

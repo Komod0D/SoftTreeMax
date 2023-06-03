@@ -3,10 +3,6 @@ import torch as th
 from torchcule.atari import Env as AtariEnv
 from torchcule.atari import Rom as AtariRom
 from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
-from gym import spaces
-
-# Internals
-from environments.failure import Failure
 
 CROSSOVER_DICT = {"MsPacman": 1, "Breakout": 2, "Assault": 2, "Krull": 2, "Pong": 1, "Boxing": 1, "Asteroids": 1}
 
@@ -211,66 +207,3 @@ class CuleBFS():
         cpu_env.set_size(1)
         gpu_env.set_size(1)
         return state_clone, rewards, first_action
-    
-
-
-class FailureBFS():
-    def __init__(self, step_env, tree_depth, gamma=0.99, compute_val_func=None, max_width=-1):
-        if type(step_env) == DummyVecEnv:
-            self.multiple_envs = True
-            self.env_kwargs = step_env.envs[0].env_kwargs
-            self.env: Failure = step_env.envs[0]
-        else:
-            self.multiple_envs = False
-            self.env_kwargs = step_env.env_kwargs
-            self.env: Failure = step_env
-
-
-        self.time_horizon = self.env.time_horizon
-        self.time_step = self.env.time_step
-        self.gamma = gamma
-        self.max_depth = tree_depth
-        self.max_width = max_width
-        self.compute_val_func = compute_val_func
-
-
-    def bfs(self, state, tree_depth, time_step=-1):
-
-        first_action = [a for a in range(self.env.action_space.n)]
-        
-        if time_step == -1:
-            time_step = self.env.time_step
-
-        
-        rewards = []
-        states = []
-        terminations = []
-
-        for a in first_action:
-            env = Failure(self.env_kwargs["n_states"], self.env_kwargs["time_horizon"], self.env_kwargs["env_kwargs"])
-            env.current_state = state
-            env.time_step = time_step
-            state, reward, terminated, _ = env.step(a)
-            states.append(state)
-            rewards.append(reward)
-            terminations.append(terminated)
-        
-        if tree_depth == 0:
-            return th.Tensor(states), th.Tensor(rewards), first_action
-        
-        new_states = []
-        new_rewards = []
-        for t, s, r in zip(terminations, states, rewards):
-            if not t:
-                temp_states, temp_rewards, _ = self.bfs(s, tree_depth - 1, time_step + 1)
-                new_states.append(temp_states)
-                new_rewards.append(r + self.gamma * temp_rewards)
-            else:
-                new_states.append(th.Tensor([s]))
-                new_rewards.append(reward)
-
-        states = th.cat(new_states)
-        rewards = th.cat(new_rewards)
-        
-        first_action = th.Tensor(first_action)
-        return states.to(0).reshape(-1, 1), rewards.to(0), first_action.to(0)
