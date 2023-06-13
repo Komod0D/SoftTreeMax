@@ -46,7 +46,7 @@ def main():
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4"]
     
     custom_env = config.env_name in ['Failure']
-    pixel_input = custom_env
+    pixel_input = not custom_env
     if config.tree_depth == 0 and config.run_type == "train" and not custom_env:
         env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
                               clip_reward=config.clip_reward, fire_reset=fire_reset,
