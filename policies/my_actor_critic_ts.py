@@ -63,18 +63,47 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
             latent_pi, value_root = self.compute_value(leaves_obs=leaves_observations, root_obs=obs)
             value_root = (val_coef * value_root + rewards.reshape([-1, 1])).max()
         else:
-            latent_pi, value_root = self.compute_value_with_root(leaves_obs=leaves_observations, root_obs=obs)    
-        
-        mean_actions_logits = th.ones((self.action_space.n, ), device=obs.device) / self.action_space.n
-        mean_actions_logits[0] += 1
+            latent_pi, value_root = self.compute_value_with_root(leaves_obs=leaves_observations, root_obs=obs)   
 
-        mean_actions_logits += value_root[:, 0] * 0
+        mean_actions = val_coef * self.action_net(latent_pi) + rewards.reshape([-1, 1])
+        if self.cule_bfs.max_width == -1:
+            mean_actions_per_subtree = self.beta * mean_actions.reshape([self.action_space.n, -1])
+            counts = th.ones([1, self.action_space.n]) * mean_actions_per_subtree.shape[1]
+        else:
+            mean_actions_per_subtree = th.zeros(self.action_space.n, mean_actions.shape[0], mean_actions.shape[1],
+                                                device=mean_actions.device)
+            idxes = th.arange(mean_actions.shape[0])
+            counts = th.zeros(self.action_space.n)
+            v, c = th.unique(first_action, return_counts=True)
+            counts[v] = c.type(th.float32) * self.action_space.n
+            mean_actions_per_subtree[first_action.flatten(), idxes, :] = mean_actions
+            mean_actions_per_subtree = self.beta * mean_actions_per_subtree.reshape([self.action_space.n, -1])
+        counts = counts.to(mean_actions.device).reshape([1, -1])
+        if self.is_cumulative_mode:
+            mean_actions_logits = th.sum(mean_actions_per_subtree, dim=1, keepdim=True).transpose(1, 0) / counts
+        else:
+            # To obtain the mean we subtract the normalization log(#leaves)
+            mean_actions_logits = th.logsumexp(mean_actions_per_subtree, dim=1, keepdim=True).transpose(1, 0) - \
+                                  th.log(counts)
+        mean_actions_logits[counts == 0] = -math.inf
+        depth0_logits = self.compute_value(leaves_obs=obs)[0] if self.learn_alpha else th.tensor(0)
+        if th.any(th.isnan(mean_actions_logits)):
+            print("NaN in forward:mean_actions_logits.")
+            mean_actions_logits[th.isnan(mean_actions_logits)] = 0
+        if th.any(th.isnan(depth0_logits)):
+            print("NaN in forward:depth0_logits.")
+            depth0_logits[th.isnan(depth0_logits)] = 0
+        mean_actions_logits = self.alpha * mean_actions_logits + (1 - self.alpha) * depth0_logits
+        mean_actions_logits = add_regularization_logits(mean_actions_logits, self.regularization)
         distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
-        
+        if self.time_step - self.buffer_size in self.timestep2obs_dict:
+            del self.obs2leaves_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
+            del self.obs2timestep_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
+            del self.timestep2obs_dict[self.time_step - self.buffer_size]
         self.time_step += 1
-        return actions.reshape(-1, 1), value_root, log_prob
+        return actions, value_root, log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
         """
