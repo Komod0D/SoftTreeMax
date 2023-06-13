@@ -97,9 +97,11 @@ def main():
         if config.model_filename is None:
             raise ValueError("Model filename missing. Please specify using model_filename argument.")
         if config.tree_depth == 0:
-            model.policy = ActorCriticCnnPolicyDepth0.load(config.model_filename)
+            policy = ActorCriticCnnPolicyDepth0 if pixel_input else ActorCriticPolicyDepth0
+            model.policy = policy.load(config.model_filename)
         else:
-            model.policy = ActorCriticCnnTSPolicy.load(config.model_filename, lr_schedule=ppo_def_lr, env=env)
+            policy = ActorCriticCnnTSPolicy if pixel_input else ActorCriticTSPolicy
+            model.policy = policy.load(config.model_filename, lr_schedule=ppo_def_lr, env=env)
         avg_score, avg_length = evaluate_policy(model, env, n_eval_episodes=config.n_eval_episodes,
                                                 return_episode_rewards=True, deterministic=False)
         print("Scores of all episodes: ", avg_score)
