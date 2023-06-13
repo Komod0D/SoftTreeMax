@@ -7,7 +7,7 @@ import torch as th
 from stable_baselines3.common.utils import get_device
 
 # Internals
-from policies.actor_critic_depth0 import ActorCriticPolicyDepth0
+from policies.my_actor_critic_depth0 import ActorCriticPolicyDepth0
 from policies.cule_bfs import CuleBFS, FailureBFS
 from utils import add_regularization_logits
 
