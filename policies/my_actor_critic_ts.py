@@ -194,7 +194,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
             return values, log_prob, distribution.entropy()
 
     def hash_obs(self, obs):
-        return (obs[:, -2:, :, :].int()).view(obs.shape[0], -1).sum(dim=1)
+        return obs
 
     def compute_value_with_root(self, leaves_obs, root_obs=None):
         if root_obs is None:
