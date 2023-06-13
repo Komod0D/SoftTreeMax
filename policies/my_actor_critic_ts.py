@@ -8,7 +8,7 @@ from stable_baselines3.common.utils import get_device
 
 # Internals
 from policies.my_actor_critic_depth0 import ActorCriticPolicyDepth0
-from policies.cule_bfs import CuleBFS, FailureBFS
+from policies.my_cule_bfs import FailureBFS
 from utils import add_regularization_logits
 
 
