@@ -15,6 +15,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 # Internals
 from environments.cule_env import CuleEnv
 from environments.cule_env_multiple import CuleEnvMultiple
+from environments.custom import Failure
 from policies.actor_critic_ts import ActorCriticCnnTSPolicy
 from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
 
@@ -44,13 +45,17 @@ def main():
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4"]
     pixel_input = fire_reset
-    if config.tree_depth == 0 and config.run_type == "train":
+    custom_env = config.env_name in ['Failure']
+    if config.tree_depth == 0 and config.run_type == "train" and not custom_env:
         env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
                               clip_reward=config.clip_reward, fire_reset=fire_reset,
                               n_envs=config.n_envs)
-    else:
+    elif not custom_env:
         env = CuleEnv(env_kwargs=env_kwargs, device=get_device(),
                       clip_reward=config.clip_reward, fire_reset=fire_reset)
+    else:
+        env = Failure(env_kwargs=env_kwargs)
+
     print("Environment:", config.env_name, "Num actions:", env.action_space.n, "Tree depth:", config.tree_depth)
 
     # Setting PPO parameters to the original paper defaults
@@ -74,7 +79,7 @@ def main():
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v,
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
         policy = ActorCriticCnnTSPolicy if pixel_input else ActorCriticTSPolicy
-        model = PPO(policy=, env=env, verbose=1, policy_kwargs=policy_kwargs, **PPO_params)
+        model = PPO(policy=policy, env=env, verbose=1, policy_kwargs=policy_kwargs, **PPO_params)
 
     # save agent folder and name
     saved_agents_dir = "saved_agents"

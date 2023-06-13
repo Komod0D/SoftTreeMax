@@ -6,7 +6,7 @@ from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 from gym import spaces
 
 # Internals
-from environments.failure import Failure
+from environments.custom import Failure
 
 CROSSOVER_DICT = {"MsPacman": 1, "Breakout": 2, "Assault": 2, "Krull": 2, "Pong": 1, "Boxing": 1, "Asteroids": 1}
 
