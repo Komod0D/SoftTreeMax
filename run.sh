@@ -11,7 +11,7 @@ do
 done
     
 
-if [["$run_type" == "train"]]
+if [[ "$run_type" == "train" ]]
 then
     echo 'Training'
     python $debug main.py --env_name=Failure --tree_depth=2 --run_type=train --total_timesteps=300000
