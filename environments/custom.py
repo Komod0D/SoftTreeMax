@@ -2,6 +2,16 @@ import gym
 from gym import spaces
 import numpy as np
 
+
+def get_env(env_kwargs):
+    env = env_kwargs['env_name']
+    if env == 'Failure':
+        return Failure(env_kwargs=env_kwargs)
+    elif env == 'Step':
+        return Step(env_kwargs=env_kwargs)
+    else:
+        raise ValueError(f'"{env}" is not a correct environment name')
+
 class Step(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 30}
 

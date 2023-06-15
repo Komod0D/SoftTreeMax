@@ -15,7 +15,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 # Internals
 from environments.cule_env import CuleEnv
 from environments.cule_env_multiple import CuleEnvMultiple
-from environments.custom import Failure
+from environments.custom import get_env
 from policies.actor_critic_ts import ActorCriticCnnTSPolicy
 from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
 
@@ -45,7 +45,7 @@ def main():
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4"]
     
-    custom_env = config.env_name in ['Failure']
+    custom_env = config.env_name in ['Failure', 'Step']
     pixel_input = not custom_env
     if config.tree_depth == 0 and config.run_type == "train" and not custom_env:
         env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
@@ -55,7 +55,8 @@ def main():
         env = CuleEnv(env_kwargs=env_kwargs, device=get_device(),
                       clip_reward=config.clip_reward, fire_reset=fire_reset)
     else:
-        env = Failure(env_kwargs=env_kwargs)
+        
+        env = get_env(env_kwargs=env_kwargs)
 
     print("Environment:", config.env_name, "Num actions:", env.action_space.n, "Tree depth:", config.tree_depth)
 
