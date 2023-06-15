@@ -17,5 +17,12 @@ then
     python $debug main.py --env_name=Failure --tree_depth=2 --run_type=train --total_timesteps=300000
 else 
     echo 'Testing'
-    python $debug main.py --env_name=Failure --tree_depth=2 --run_type=evaluate --model_filename=$weights
+    if [[ "$weights" == "" ]]
+    then
+        echo "No weight file specified, missing option -w"
+    
+    else
+        echo "Using weights from $weights"
+        python $debug main.py --env_name=Failure --tree_depth=2 --run_type=evaluate --model_filename=$weights
+    fi
 fi
