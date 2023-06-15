@@ -1,12 +1,13 @@
 #!/bin/bash
 
 
-while getopts t:w:d flag
+while getopts t:w:dc flag
 do
     case "${flag}" in
         t) run_type=${OPTARG};;
         w) weights=${OPTARG};;
-        d) debug='-m pdb'
+        d) debug='-m pdb';;
+        c) cumulative='--is_cumulative_mode=true'
     esac
 done
     
@@ -14,7 +15,7 @@ done
 if [[ "$run_type" == "train" ]]
 then
     echo 'Training'
-    python $debug main.py --env_name=Failure --tree_depth=2 --run_type=train --total_timesteps=300000
+    python $debug main.py --env_name=Failure --tree_depth=2 --run_type=train --total_timesteps=300000 $cumulative
 else 
     echo 'Testing'
     if [[ "$weights" == "" ]]
