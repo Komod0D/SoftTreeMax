@@ -94,7 +94,7 @@ class Step(gym.Env):
         direction = action * 2 - 1
         new_obs = self.current_state + direction
         observation = min(max(new_obs, 0), self.observation_space.n - 1)
-        reward = 1 if action == 0 and self.current_state == 0 else 0
+        reward = 1 if observation == 0 and self.current_state == 0 else 0
         self.time_step += 1
         terminated = self.time_step >= self.time_horizon
 
