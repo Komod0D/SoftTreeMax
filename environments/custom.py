@@ -36,12 +36,12 @@ class Zigzag(gym.Env):
 
     def step(self, action):
         direction = action * 2 - 1
-        if self.current_state % 2 == 0:
+        if self.current_state % 2 != 0:
             direction *= -1
 
         new_obs = self.current_state + direction
         observation = min(max(new_obs, 0), self.observation_space.n - 1)
-        reward = 1 if action == 0 and self.current_state == 0 else 0
+        reward = 1 if new_obs == 0  and self.current_state == 0 else 0
         self.time_step += 1
         terminated = self.time_step >= self.time_horizon
 
@@ -50,7 +50,7 @@ class Zigzag(gym.Env):
         if terminated:
             observation = self.reset()
 
-        self.current_state = action
+        self.current_state = observation
         return observation, reward, terminated, info
 
     def reset(self, seed=None, options=None, initial_steps=None, verbose=None):
@@ -103,7 +103,7 @@ class Step(gym.Env):
         if terminated:
             observation = self.reset()
 
-        self.current_state = action
+        self.current_state = observation
         return observation, reward, terminated, info
 
     def reset(self, seed=None, options=None, initial_steps=None, verbose=None):
