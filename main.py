@@ -45,7 +45,7 @@ def main():
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4"]
     
-    custom_env = config.env_name in ['Failure', 'Step', 'Zigzag']
+    custom_env = config.env_name in ['Network', 'Step', 'Flipflop']
     pixel_input = not custom_env
     if config.tree_depth == 0 and config.run_type == "train" and not custom_env:
         env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",

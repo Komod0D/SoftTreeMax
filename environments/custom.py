@@ -5,26 +5,26 @@ import numpy as np
 
 def get_env(env_kwargs):
     env = env_kwargs['env_name']
-    if env == 'Failure':
-        return Failure(env_kwargs=env_kwargs)
+    if env == 'Network':
+        return Network(env_kwargs=env_kwargs)
     elif env == 'Step':
         return Step(env_kwargs=env_kwargs)
-    elif env == 'Zigzag':
-        return Zigzag(env_kwargs=env_kwargs)
+    elif env == 'Flipflop':
+        return Flipflop(env_kwargs=env_kwargs)
     else:
         raise ValueError(f'"{env}" is not a correct environment name')
     
     
     
-class Zigzag(gym.Env):
+class Flipflop(gym.Env):
     """Custom Environment that follows gym interface."""
 
     metadata = {"render_modes": ["human"], "render_fps": 30}
 
-    def __init__(self, n_states: int = 3, time_horizon: int = 10, env_kwargs=None):
+    def __init__(self, n_states: int = 4, time_horizon: int = 10, env_kwargs=None):
         super().__init__()
         self.n_states = n_states
-        self.env_kwargs = dict(env_name="Failure", n_states=n_states, time_horizon=time_horizon, env_kwargs=env_kwargs)
+        self.env_kwargs = dict(env_name="Flipflop", n_states=n_states, time_horizon=time_horizon, env_kwargs=env_kwargs)
         self.observation_space = spaces.Discrete(n_states)
         self.action_space = spaces.Discrete(2)
         self.action_set = self.action_space
@@ -68,7 +68,7 @@ class Zigzag(gym.Env):
         pass
 
     def copy(self):
-        env = Zigzag(self.n_states, self.time_horizon, self.env_kwargs)
+        env = Flipflop(self.n_states, self.time_horizon, self.env_kwargs)
         env.current_state = self.current_state
         env.time_step = self.time_step
 
@@ -80,7 +80,7 @@ class Step(gym.Env):
     def __init__(self, n_states: int = 3, time_horizon: int = 10, env_kwargs=None):
         super().__init__()
         self.n_states = n_states
-        self.env_kwargs = dict(env_name="Failure", n_states=n_states, time_horizon=time_horizon, env_kwargs=env_kwargs)
+        self.env_kwargs = dict(env_name="Step", n_states=n_states, time_horizon=time_horizon, env_kwargs=env_kwargs)
         self.observation_space = spaces.Discrete(n_states)
         self.action_space = spaces.Discrete(2)
         self.action_set = self.action_space
@@ -127,7 +127,7 @@ class Step(gym.Env):
 
         return env
 
-class Failure(gym.Env):
+class Network(gym.Env):
     """Custom Environment that follows gym interface."""
 
     metadata = {"render_modes": ["human"], "render_fps": 30}
@@ -135,7 +135,7 @@ class Failure(gym.Env):
     def __init__(self, n_states: int = 3, time_horizon: int = 10, env_kwargs=None):
         super().__init__()
         self.n_states = n_states
-        self.env_kwargs = dict(env_name="Failure", n_states=n_states, time_horizon=time_horizon, env_kwargs=env_kwargs)
+        self.env_kwargs = dict(env_name="Network", n_states=n_states, time_horizon=time_horizon, env_kwargs=env_kwargs)
         self.observation_space = spaces.Discrete(n_states)
         self.action_space = self.observation_space
         self.action_set = self.action_space
@@ -174,7 +174,7 @@ class Failure(gym.Env):
         pass
 
     def copy(self):
-        env = Failure(self.n_states, self.time_horizon, self.env_kwargs)
+        env = Network(self.n_states, self.time_horizon, self.env_kwargs)
         env.current_state = self.current_state
         env.time_step = self.time_step
 
