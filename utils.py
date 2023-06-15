@@ -86,6 +86,8 @@ def create_parser():
                         help="Whether to use the value at the leaves or reward only")
     parser.add_argument("--is_cumulative_mode", type=str2bool, nargs="?", const=True, default=False,
                         help="True for Cumulative SoftTreeMax. False for Exponentiated SoftTreeMax")
+    parser.add_argument("--is_theory_mode", type=str2bool, nargs="?", const=True, default=False,
+                        help="Use theoretical SoftTreeMax with same network for all actions")
     parser.add_argument("--regularization", type=float, default=0.001, help="Minimal probability for all actions")
     parser.add_argument("--n_envs", type=int, default=256, help="Number of parallel PPO environments on GPU")
     # Evaluation fields

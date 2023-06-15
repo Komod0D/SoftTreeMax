@@ -79,7 +79,8 @@ def main():
         policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
                          "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v,
-                         "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
+                         "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization,
+                         "is_theory_mode": config.is_theory_mode}
         policy = ActorCriticCnnTSPolicy if pixel_input else ActorCriticTSPolicy
         model = PPO(policy=policy, env=env, verbose=1, policy_kwargs=policy_kwargs, **PPO_params)
 

@@ -14,7 +14,7 @@ from utils import add_regularization_logits
 
 class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
     def __init__(self, observation_space, action_space, lr_schedule, tree_depth, gamma, step_env, buffer_size,
-                 learn_alpha, learn_beta, max_width, use_leaves_v, is_cumulative_mode, regularization, **kwargs):
+                 learn_alpha, learn_beta, max_width, use_leaves_v, is_cumulative_mode, is_theory_mode, regularization, **kwargs):
         super(ActorCriticTSPolicy, self).__init__(observation_space, action_space, lr_schedule, **kwargs)        
         self.cule_bfs = FailureBFS(step_env, tree_depth, gamma, self.compute_value, max_width)
         self.time_step = 0
@@ -27,6 +27,7 @@ class ActorCriticTSPolicy(ActorCriticPolicyDepth0):
         self.tree_depth = tree_depth
         self.max_width = max_width
         self.is_cumulative_mode = is_cumulative_mode
+        self.is_theory_mode = is_theory_mode
         self.regularization = regularization
         self.alpha = th.tensor(0.5 if learn_alpha else 1.0, device=self.device)
         self.beta = th.tensor(1.0, device=self.device)
