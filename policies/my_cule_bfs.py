@@ -225,7 +225,7 @@ class CustomBFS():
             self.env_kwargs = step_env.env_kwargs
             self.env = step_env
         
-        self.env_type = get_env(self.env_kwargs["env_name"])
+        self.env_type = get_env(self.env_kwargs)
 
 
         self.time_horizon = self.env.time_horizon
