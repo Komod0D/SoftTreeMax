@@ -6,7 +6,7 @@ from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 from gym import spaces
 
 # Internals
-from environments.custom import Network
+from environments.custom import get_env
 
 CROSSOVER_DICT = {"MsPacman": 1, "Breakout": 2, "Assault": 2, "Krull": 2, "Pong": 1, "Boxing": 1, "Asteroids": 1}
 
@@ -214,16 +214,16 @@ class CuleBFS():
     
 
 
-class FailureBFS():
+class CustomBFS():
     def __init__(self, step_env, tree_depth, gamma=0.99, compute_val_func=None, max_width=-1):
         if type(step_env) == DummyVecEnv:
             self.multiple_envs = True
             self.env_kwargs = step_env.envs[0].env_kwargs
-            self.env: Network = step_env.envs[0]
+            self.env = step_env.envs[0]
         else:
             self.multiple_envs = False
             self.env_kwargs = step_env.env_kwargs
-            self.env: Network = step_env
+            self.env = step_env
 
 
         self.time_horizon = self.env.time_horizon
@@ -247,7 +247,8 @@ class FailureBFS():
         terminations = []
 
         for a in first_action:
-            env = Network(self.env_kwargs["n_states"], self.env_kwargs["time_horizon"], self.env_kwargs["env_kwargs"])
+            env_type = get_env(self.env.kwargs["env_name"])
+            env = env_type(self.env_kwargs["n_states"], self.env_kwargs["time_horizon"], self.env_kwargs["env_kwargs"])
             env.current_state = state
             env.time_step = time_step
             state, reward, terminated, _ = env.step(a)
