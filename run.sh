@@ -21,6 +21,7 @@ elif [[ "$run_type" == "train" ]]
 then
     echo 'Training'
     python $debug main.py --env_name=$env_name --tree_depth=2 --run_type=train --total_timesteps=300000 $cumulative
+    cp saved_agents/* /workspace/backup
 else 
     echo 'Testing'
     if [[ "$weights" == "" ]]
