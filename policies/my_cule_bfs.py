@@ -224,8 +224,6 @@ class CustomBFS():
             self.multiple_envs = False
             self.env_kwargs = step_env.env_kwargs
             self.env = step_env
-        
-        self.env_type = get_env(self.env_kwargs)
 
 
         self.time_horizon = self.env.time_horizon
@@ -249,7 +247,7 @@ class CustomBFS():
         terminations = []
 
         for a in first_action:
-            env = self.env_type(self.env_kwargs["n_states"], self.env_kwargs["time_horizon"], self.env_kwargs["env_kwargs"])
+            env = get_env(self.env_kwargs)
             env.current_state = state
             env.time_step = time_step
             state, reward, terminated, _ = env.step(a)
